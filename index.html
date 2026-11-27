@@ -636,6 +636,7 @@ function enterLobby() { $('meChip').textContent = '🙋 ' + myName(); show('scrL
 $('btnLogin').onclick = () => {
   const cls = $('inCls').value.trim(), num = $('inNum').value.trim(), nick = $('inNick').value.trim();
   if (!cls || !num || !nick) return toast('반, 번호, 닉네임을 모두 써 주세요');
+  if (!/^\d{1,2}$/.test(num)) return toast('번호는 1~2자리 숫자로 써 주세요');
   me = { cls, num, nick }; localStorage.setItem('gb_me', JSON.stringify(me)); enterLobby();
 };
 $('inNick').addEventListener('keydown', e => { if (e.key === 'Enter') $('btnLogin').click(); });

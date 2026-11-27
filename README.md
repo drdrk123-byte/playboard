@@ -33,18 +33,18 @@
 
 ## 설정
 > **현재 상태:** `index.html`은 Firebase 프로젝트 `lifegame-eea21`의 `playboard` 웹 앱에 연결되어 있습니다.
-> 이 프로젝트는 다른 앱(인생게임)과 함께 씁니다. 지금 게시된 Firestore 규칙은 전체 읽기·쓰기 허용이라 규칙을 바꾸지 않아도 동작합니다.
-> ⚠️ `firestore.rules`로 **전체를 덮어쓰면** `gameRooms` 밖의 접근이 모두 막힙니다. 다른 앱이 Firestore를 쓰는지 확인한 뒤에 규칙을 바꾸세요.
+> 이 프로젝트는 다른 앱(인생게임 등)과 함께 씁니다. `firestore.rules`가 게시되어 있어 **Firestore는 `gameRooms`만 열려 있습니다.**
+> ⚠️ 이 프로젝트의 다른 앱에서 Firestore를 새로 쓰려면, 그 컬렉션의 규칙을 `firestore.rules`에 추가해야 합니다. (Realtime Database 규칙은 별개입니다)
 
 아래는 새 프로젝트에 처음 설정할 때의 순서입니다.
 
 1. [Firebase 콘솔](https://console.firebase.google.com)에서 프로젝트 선택(기존 프로젝트 재사용 가능) → **Firestore Database** 만들기
 2. Firestore **규칙** 탭에 `firestore.rules` 내용을 붙여넣고 게시
-   (기존 규칙이 있으면 `match /gameRooms/{roomId} { ... }` 블록만 추가.
-   오목·바둑용 예전 블록이 이미 있으면 **새 블록으로 교체**해야 체스·장기 방이 만들어집니다)
+   (다른 앱의 Firestore 규칙이 있으면 `gameRooms` 블록과 그 아래 함수들만 추가하거나 교체)
 3. 프로젝트 설정 → 웹 앱 → `firebaseConfig` 값을 `index.html`의 `firebaseConfig`에 붙여넣기
 4. GitHub에 푸시 → Vercel에서 Import (Framework Preset: **Other**, Build 명령 없음)
 
 ## 참고
 - 로비는 `createdAt` 내림차순 정렬만 사용하므로 별도 색인이 필요 없습니다.
-- 규칙 검사는 각 기기(브라우저)에서 합니다. Firestore 규칙은 수의 옳고 그름까지 검사하지 않고, 로그인이 없어 누구나 방을 고치거나 지울 수 있습니다.
+- 수가 규칙에 맞는지는 각 기기(브라우저)에서 검사합니다.
+- Firestore 규칙은 저장 항목·길이, 자리 변경(참가·다시 하기), 끝난 대국 수정 금지를 검사합니다. 수의 옳고 그름이나 보낸 사람이 누구인지는 검사하지 못합니다. 로그인이 없어 누구나 방을 읽고 지울 수 있고, 진행 중인 판을 조작할 수도 있습니다.

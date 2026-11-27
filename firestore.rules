@@ -1,24 +1,101 @@
 rules_version = '2';
+// 여기에 없는 컬렉션은 모두 읽기·쓰기가 막힙니다.
 service cloud.firestore {
   match /databases/{database}/documents {
+
     // 오목·바둑·체스·장기 대국방 (로그인 없이 반·번호·닉네임으로 사용)
     match /gameRooms/{roomId} {
       allow read: if true;
-      allow create: if (
-                         (request.resource.data.game in ['omok', 'baduk']
-                          && request.resource.data.size in [9, 13, 15, 19]
-                          && request.resource.data.board.size() == request.resource.data.size * request.resource.data.size)
-                      || (request.resource.data.game == 'chess'
-                          && request.resource.data.size == 8
-                          && request.resource.data.board.size() == 64)
-                      || (request.resource.data.game == 'janggi'
-                          && request.resource.data.size == 9
-                          && request.resource.data.board.size() == 90)
-                    );
-      allow update: if request.resource.data.game == resource.data.game
-                    && request.resource.data.size == resource.data.size
-                    && request.resource.data.board.size() == resource.data.board.size();
+
+      allow create: if validRoom(request.resource.data)
+                    && validBoard(request.resource.data)
+                    && request.resource.data.status == 'waiting'
+                    && request.resource.data.turn == 'B'
+                    && request.resource.data.moveCount == 0
+                    && request.resource.data.white == null
+                    && request.resource.data.createdBy == request.resource.data.black.uid
+                    && request.resource.data.createdAt == request.time;
+
+      allow update: if validRoom(request.resource.data)
+                    && keepsIdentity(request.resource.data, resource.data)
+                    && (isPlay(request.resource.data, resource.data)
+                        || isJoin(request.resource.data, resource.data)
+                        || isRematch(request.resource.data, resource.data));
+
+      // 로그인이 없어서 누가 지우는지는 확인할 수 없습니다.
       allow delete: if true;
+    }
+
+    function roomKeys() {
+      return ['game', 'size', 'board', 'turn', 'ko', 'passes', 'captures', 'lastMove', 'lastFrom',
+              'moveCount', 'status', 'winner', 'reason', 'winLine', 'score', 'terr',
+              'castle', 'ep', 'halfmove', 'history', 'check', 'bikjang',
+              'title', 'black', 'white', 'createdBy', 'createdAt', 'updatedAt'];
+    }
+
+    // 항목 이름, 자료형, 길이 확인
+    function validRoom(d) {
+      return d.keys().hasOnly(roomKeys()) && d.keys().hasAll(roomKeys())
+          && d.title is string && d.title.size() <= 30
+          && d.turn in ['B', 'W']
+          && d.status in ['waiting', 'playing', 'ended']
+          && d.winner in [null, 'B', 'W', 'draw']
+          && (d.reason == null || (d.reason is string && d.reason.size() <= 20))
+          && d.moveCount is int && d.moveCount >= 0
+          && d.passes is int && d.ko is int && d.ep is int && d.halfmove is int
+          && d.lastMove is int && d.lastFrom is int
+          && d.check is bool && d.bikjang is bool
+          && d.castle is string && d.castle.size() <= 4
+          && d.terr is string && d.terr.size() <= 361
+          && d.winLine is list && d.winLine.size() <= 19
+          && d.history is list && d.history.size() <= 101
+          && d.captures is map && d.captures.keys().hasOnly(['B', 'W'])
+          && (d.score == null || (d.score is map && d.score.keys().hasOnly(['B', 'W'])))
+          && validPlayer(d.black)
+          && (d.white == null || validPlayer(d.white))
+          && d.updatedAt == request.time;
+    }
+
+    function validPlayer(p) {
+      return p is map && p.keys().hasOnly(['uid', 'name']) && p.keys().hasAll(['uid', 'name'])
+          && p.uid is string && p.uid.size() <= 40
+          && p.name is string && p.name.size() <= 40;
+    }
+
+    function validBoard(d) {
+      return d.board is string
+          && ((d.game in ['omok', 'baduk'] && d.size in [9, 13, 15, 19] && d.board.size() == d.size * d.size)
+              || (d.game == 'chess' && d.size == 8 && d.board.size() == 64)
+              || (d.game == 'janggi' && d.size == 9 && d.board.size() == 90));
+    }
+
+    // 게임 종류, 판 크기, 방 이름, 만든 사람은 바꿀 수 없음
+    function keepsIdentity(d, old) {
+      return d.game == old.game && d.size == old.size
+          && d.board is string && d.board.size() == old.board.size()
+          && d.title == old.title && d.createdBy == old.createdBy && d.createdAt == old.createdAt;
+    }
+
+    // 착수·패스·기권·장기 차림: 자리는 그대로, 끝난 대국은 수정 불가
+    function isPlay(d, old) {
+      return d.black == old.black && d.white == old.white
+          && d.moveCount in [old.moveCount, old.moveCount + 1]
+          && ((old.status == 'waiting' && d.status == 'waiting' && d.moveCount == 0)
+              || (old.status == 'playing' && d.status in ['playing', 'ended']));
+    }
+
+    // 참가: 비어 있는 자리에 다른 사람이 들어옴
+    function isJoin(d, old) {
+      return old.status == 'waiting' && old.white == null && d.status == 'playing'
+          && d.white != null && d.white.uid != d.black.uid
+          && d.diff(old).affectedKeys().hasOnly(['white', 'status', 'updatedAt']);
+    }
+
+    // 다시 하기: 끝난 대국만, 자리를 맞바꿔 처음부터
+    function isRematch(d, old) {
+      return old.status == 'ended' && d.status == 'playing'
+          && d.black == old.white && d.white == old.black
+          && d.moveCount == 0 && d.turn == 'B';
     }
   }
 }
