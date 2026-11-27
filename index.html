@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<title>♟️ 우리반 보드게임 — 오목·바둑·체스·장기</title>
+<title>♟️ 우리반 보드게임 — 오목·바둑·체스·장기·알까기</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet" />
 <style>
@@ -39,13 +39,11 @@
   .field{margin-bottom:12px;text-align:left}
   .field label{display:block;font-weight:800;margin-bottom:6px;font-size:15px}
   .banner{background:#fff1d6;border:2px dashed var(--pri2);border-radius:16px;padding:12px 16px;margin-bottom:16px;font-size:15px;line-height:1.5}
-  .make{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+  .make{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
   .make button{padding:20px 12px;border-radius:20px;font-size:19px;font-weight:900;color:var(--ink);background:#fff;border:3px solid var(--line);box-shadow:0 5px 0 var(--line);line-height:1.35}
   .make button:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)}
   .make button .e{font-size:38px;display:block;margin-bottom:4px}
   .make button small{display:block;font-weight:600;color:var(--sub);font-size:13px}
-  .make button.wide{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:14px;padding:14px}
-  .make button.wide .e{margin:0;font-size:30px}
   .sec-title{font-size:20px;font-weight:900;margin:6px 0 12px;display:flex;align-items:center;gap:8px;justify-content:space-between}
   .rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
   .room{background:#fff;border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:8px}
@@ -111,7 +109,7 @@
   <div class="card login">
     <div class="big">♟️</div>
     <h1>우리반 보드게임</h1>
-    <p>오목·바둑·체스·장기<br>반·번호·닉네임만 입력하고 들어가요 🙂</p>
+    <p>오목·바둑·체스·장기·알까기<br>반·번호·닉네임만 입력하고 들어가요 🙂</p>
     <div class="row">
       <div class="field" style="flex:1"><label>반</label><input id="inCls" placeholder="예) 5-2" maxlength="6" /></div>
       <div class="field" style="flex:1"><label>번호</label><input id="inNum" type="number" min="1" max="40" placeholder="예) 7" /></div>
@@ -139,7 +137,8 @@
     <button data-make="baduk"><span class="e">🪨</span>바둑 방 만들기<small>9×9 · 13×13 · 19×19</small></button>
     <button data-make="chess"><span class="e">♞</span>체스 방 만들기<small>체크메이트하면 승리!</small></button>
     <button data-make="janggi"><span class="e">🐘</span>장기 방 만들기<small>외통수면 승리!</small></button>
-    <button data-make="local" class="wide"><span class="e">🤝</span><span>한 기기에서 둘이<small>태블릿 하나로 번갈아 두기</small></span></button>
+    <button data-make="alkkagi"><span class="e">🎯</span>알까기 방 만들기<small>튕겨서 상대 돌 떨어뜨리기!</small></button>
+    <button data-make="local"><span class="e">🤝</span>한 기기에서 둘이<small>태블릿 하나로 번갈아 두기</small></button>
   </div>
   <div class="sec-title"><span>🏠 열린 방</span><span class="chip" id="roomCount">0개</span></div>
   <div class="rooms" id="roomList"></div>
@@ -168,7 +167,7 @@
     <button class="btn ghost hidden" id="btnDelete">🗑️ 방 없애기</button>
   </div>
   <div class="opts">
-    <label class="opt"><input type="checkbox" id="optConfirm" /> <span>놓을 자리를 두 번 눌러야 착수 (실수 방지)</span></label>
+    <label class="opt" id="lbConfirm"><input type="checkbox" id="optConfirm" /> <span>놓을 자리를 두 번 눌러야 착수 (실수 방지)</span></label>
     <label class="opt hidden" id="lbNames"><input type="checkbox" id="optNames" /> <span>체스 말 이름 항상 보기</span></label>
   </div>
   <div class="help" id="gHelp"></div>
@@ -179,10 +178,13 @@
   <div class="card">
     <h3 id="mdTitle">방 만들기</h3>
     <div class="field" id="fGame"><label>게임</label>
-      <div class="seg" id="segGame"><button data-v="omok">오목</button><button data-v="baduk">바둑</button><button data-v="chess">체스</button><button data-v="janggi">장기</button></div>
+      <div class="seg" id="segGame"><button data-v="omok">오목</button><button data-v="baduk">바둑</button><button data-v="chess">체스</button><button data-v="janggi">장기</button><button data-v="alkkagi">알까기</button></div>
     </div>
     <div class="field" id="fSize"><label>바둑판 크기</label>
       <div class="seg" id="segSize"><button data-v="9">9×9 (입문)</button><button data-v="13">13×13</button><button data-v="19">19×19</button></div>
+    </div>
+    <div class="field" id="fStones"><label>한 사람의 돌 개수</label>
+      <div class="seg" id="segStones"><button data-v="5">5개</button><button data-v="7">7개</button><button data-v="10">10개</button></div>
     </div>
     <div class="field" id="fTitle"><label>방 이름</label><input id="inTitle" maxlength="20" /></div>
     <div class="field hidden" id="fLocalNames"><label>두 사람 이름 (왼쪽이 먼저 둬요)</label>
@@ -232,7 +234,8 @@ const GAMES = {
   omok:   { name: '오목', icon: '🟠', side: { B: '⚫ 흑', W: '⚪ 백' }, plain: { B: '흑', W: '백' } },
   baduk:  { name: '바둑', icon: '🪨', side: { B: '⚫ 흑', W: '⚪ 백' }, plain: { B: '흑', W: '백' } },
   chess:  { name: '체스', icon: '♞', side: { B: '⚪ 백', W: '⚫ 흑' }, plain: { B: '백', W: '흑' } },
-  janggi: { name: '장기', icon: '🐘', side: { B: '🟢 초', W: '🔴 한' }, plain: { B: '초', W: '한' } }
+  janggi: { name: '장기', icon: '🐘', side: { B: '🟢 초', W: '🔴 한' }, plain: { B: '초', W: '한' } },
+  alkkagi: { name: '알까기', icon: '🎯', side: { B: '⚫ 흑', W: '⚪ 백' }, plain: { B: '흑', W: '백' } }
 };
 const other = c => c === 'B' ? 'W' : 'B';
 const fail = msg => ({ error: msg });
@@ -537,9 +540,84 @@ function playJanggi(s, from, to) {
   return { state: ns };
 }
 
+/* ---------- 알까기 ---------- */
+/* 판은 가로·세로 1000. 돌의 중심이 판 밖으로 나가면 떨어져요.
+   board: 돌 하나에 8글자(x 4자리 + y 4자리), 떨어진 돌은 '--------'. 앞쪽 절반이 'B' 자리 돌.
+   size: 한 사람의 돌 개수.  shot: { i: 돌 번호, dx, dy: 힘의 방향과 세기(정수, 길이 최대 1000) }
+   같은 입력이면 어느 기기에서나 같은 결과가 나오도록 사칙연산과 제곱근만 써요. */
+const AK = { R: 34, MAX_SPEED: 16, REACH: 1400, BOUNCE: 0.92 };
+const AK_FRICTION = AK.MAX_SPEED * AK.MAX_SPEED / (2 * AK.REACH);   // 한 계산 단계마다 줄어드는 속력
+const pad4 = v => String(v).padStart(4, '0');
+function akEncode(stones) { return stones.map(s => s.out ? '--------' : pad4(Math.round(s.x)) + pad4(Math.round(s.y))).join(''); }
+function akDecode(board) {
+  return Array.from({ length: board.length / 8 }, (_, i) => {
+    const v = board.substr(i * 8, 8);
+    return v[0] === '-' ? { x: 0, y: 0, out: true } : { x: +v.slice(0, 4), y: +v.slice(4), out: false };
+  });
+}
+const akOwner = (s, i) => i < s.size ? 'B' : 'W';
+const akAlive = (board, size, c) => akDecode(board).filter((p, i) => !p.out && (i < size) === (c === 'B')).length;
+function akStart(count) {
+  const rows = count <= 5 ? [count] : [Math.ceil(count / 2), Math.floor(count / 2)];
+  const side = color => rows.flatMap((n, r) => Array.from({ length: n }, (_, k) => {
+    const x = Math.round(1000 * (k + 1) / (n + 1)), y = 860 - r * 130;
+    return color === 'B' ? { x, y } : { x: 1000 - x, y: 1000 - y };
+  }));
+  return akEncode([...side('B'), ...side('W')]);
+}
+/* 한 번 튕긴 결과. frames 는 화면에 보여 줄 중간 모습(1/60초 간격) */
+function akSimulate(board, shot) {
+  const st = akDecode(board).map(p => ({ ...p, vx: 0, vy: 0 }));
+  st[shot.i].vx = shot.dx / 1000 * AK.MAX_SPEED;
+  st[shot.i].vy = shot.dy / 1000 * AK.MAX_SPEED;
+  const snap = () => st.map(p => ({ x: p.x, y: p.y, out: p.out }));
+  const frames = [snap()], D = AK.R * 2;
+  for (let step = 1; step <= 3000; step++) {
+    for (const p of st) {
+      if (p.out) continue;
+      const v = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      if (v === 0) continue;
+      p.x += p.vx; p.y += p.vy;
+      const k = v > AK_FRICTION ? (v - AK_FRICTION) / v : 0;
+      p.vx *= k; p.vy *= k;
+    }
+    for (let a = 0; a < st.length; a++) for (let b = a + 1; b < st.length; b++) {
+      const p = st[a], q = st[b];
+      if (p.out || q.out) continue;
+      const dx = q.x - p.x, dy = q.y - p.y, d2 = dx * dx + dy * dy;
+      if (d2 >= D * D || d2 === 0) continue;
+      const d = Math.sqrt(d2), nx = dx / d, ny = dy / d, push = (D - d) / 2;
+      const closing = (p.vx - q.vx) * nx + (p.vy - q.vy) * ny;
+      if (closing <= 0) continue;                       // 서로 가까워질 때만 부딪힘
+      p.x -= nx * push; p.y -= ny * push; q.x += nx * push; q.y += ny * push;
+      const j = closing * (1 + AK.BOUNCE) / 2;          // 무게가 같은 두 돌의 충돌
+      p.vx -= j * nx; p.vy -= j * ny; q.vx += j * nx; q.vy += j * ny;
+    }
+    for (const p of st) if (!p.out && (p.x < 0 || p.x > 1000 || p.y < 0 || p.y > 1000)) { p.out = true; p.vx = p.vy = 0; }
+    const moving = st.some(p => !p.out && (p.vx !== 0 || p.vy !== 0));
+    if (step % 2 === 0 || !moving) frames.push(snap());
+    if (!moving) break;
+  }
+  return { frames, board: akEncode(st) };
+}
+const akShotText = shot => `${shot.i},${shot.dx},${shot.dy}`;
+function akParseShot(text) { const [i, dx, dy] = String(text).split(',').map(Number); return { i, dx, dy }; }
+function playAlkkagi(s, shot) {
+  const me = s.turn, { i, dx, dy } = shot || {};
+  if (![i, dx, dy].every(Number.isInteger) || i < 0 || i >= s.size * 2) return fail('칠 수 없어요');
+  if (akOwner(s, i) !== me || akDecode(s.board)[i].out) return fail('내 돌을 골라 주세요');
+  const len2 = dx * dx + dy * dy;
+  if (len2 === 0 || len2 > 1002 * 1002) return fail('칠 수 없어요');
+  const board = akSimulate(s.board, shot).board;
+  const ns = { ...s, board, turn: other(me), history: [s.board, akShotText(shot)], lastFrom: i, lastMove: -1, moveCount: s.moveCount + 1 };
+  const b = akAlive(board, s.size, 'B'), w = akAlive(board, s.size, 'W');
+  if (!b || !w) Object.assign(ns, { status: 'ended', winner: b ? 'B' : w ? 'W' : 'draw', reason: 'allout' });
+  return { state: ns };
+}
+
 /* ---------- 공통 ---------- */
 function newState(game, size) {
-  const board = game === 'chess' ? CHESS_START : game === 'janggi' ? janggiStart() : '.'.repeat(size * size);
+  const board = game === 'chess' ? CHESS_START : game === 'janggi' ? janggiStart() : game === 'alkkagi' ? akStart(size) : '.'.repeat(size * size);
   const s = { game, size, board, turn: 'B', ko: -1, passes: 0,
     captures: { B: 0, W: 0 }, lastMove: -1, lastFrom: -1, moveCount: 0, status: 'playing',
     winner: null, reason: null, winLine: [], score: null, terr: '',
@@ -547,22 +625,23 @@ function newState(game, size) {
   if (game === 'chess') s.history = [chessKey(s)];
   return s;
 }
-const sizeOf = (game, badukSize) => ({ omok: 15, baduk: badukSize, chess: 8, janggi: 9 })[game];
+const sizeOf = (game, badukSize, stoneCount) => ({ omok: 15, baduk: badukSize, chess: 8, janggi: 9, alkkagi: stoneCount })[game];
 const STATE_KEYS = Object.keys(newState('omok', 15));
 const pickState = s => Object.fromEntries(STATE_KEYS.map(k => [k, s[k] ?? null]));
 
 /* 체스·장기: 그 말이 지금 갈 수 있는 칸 (차례와 상관없이 확인 가능) */
 function targetsOf(s, from) {
-  if (isStoneGame(s.game) || from < 0 || s.board[from] === '.') return [];
+  if ((s.game !== 'chess' && s.game !== 'janggi') || from < 0 || s.board[from] === '.') return [];
   if (s.game === 'janggi') return janggiTargets(s, from);
   // 차례가 아닌 쪽의 말을 볼 때는 앙파상 칸을 빼요
   return chessTargets(owner(s.board[from]) === s.turn ? s : { ...s, ep: -1 }, from);
 }
-/* 오목·바둑은 playAt(s, 자리), 체스·장기는 playAt(s, 도착, 출발, 승급) */
+/* 오목·바둑은 playAt(s, 자리), 체스·장기는 playAt(s, 도착, 출발, 승급), 알까기는 playAt(s, shot) */
 function playAt(s, to, from, promo) {
   if (s.status !== 'playing') return fail('지금은 둘 수 없어요');
   if (s.game === 'omok') return playOmok(s, to);
   if (s.game === 'baduk') return playBaduk(s, to);
+  if (s.game === 'alkkagi') return playAlkkagi(s, to);
   return s.game === 'chess' ? playChess(s, from, to, promo) : playJanggi(s, from, to);
 }
 function doPass(s) {
@@ -619,7 +698,7 @@ let me = JSON.parse(localStorage.getItem('gb_me') || 'null');
 if (!localStorage.getItem('gb_uid')) localStorage.setItem('gb_uid', Math.random().toString(36).slice(2) + Date.now().toString(36));
 const UID = localStorage.getItem('gb_uid');
 const myName = () => `${me.nick}(${me.cls} ${me.num}번)`;
-const gameLabel = (game, size) => GAMES[game].name + (game === 'baduk' ? ` ${size}×${size}` : '');
+const gameLabel = (game, size) => GAMES[game].name + (game === 'baduk' ? ` ${size}×${size}` : game === 'alkkagi' ? ` (돌 ${size}개)` : '');
 
 /* ================= Firebase ================= */
 let db = null, F = null;
@@ -681,10 +760,11 @@ $('roomList').onclick = e => {
 };
 
 /* ---- 방 만들기 모달 ---- */
-let mk = { mode: 'online', game: 'omok', size: 9 };
+let mk = { mode: 'online', game: 'omok', size: 9, stones: 5 };
 function segSet(id, v) { [...$(id).children].forEach(b => b.classList.toggle('on', b.dataset.v == v)); }
 function syncMake() {
-  segSet('segGame', mk.game); segSet('segSize', mk.size);
+  segSet('segGame', mk.game); segSet('segSize', mk.size); segSet('segStones', mk.stones);
+  $('fStones').classList.toggle('hidden', mk.game !== 'alkkagi');
   $('fSize').classList.toggle('hidden', mk.game !== 'baduk');
   $('inTitle').value = `${me.nick}의 ${GAMES[mk.game].name}방`;
   $('inLB').placeholder = GAMES[mk.game].side.B;
@@ -704,9 +784,10 @@ function openMake(kind) {
 document.querySelectorAll('[data-make]').forEach(b => b.onclick = () => openMake(b.dataset.make));
 $('segGame').onclick = e => { const v = e.target.dataset.v; if (!v) return; mk.game = v; syncMake(); };
 $('segSize').onclick = e => { const v = e.target.dataset.v; if (!v) return; mk.size = +v; segSet('segSize', v); };
+$('segStones').onclick = e => { const v = e.target.dataset.v; if (!v) return; mk.stones = +v; segSet('segStones', v); };
 $('mdCancel').onclick = () => $('mdMake').classList.add('hidden');
 $('mdOk').onclick = async () => {
-  const game = mk.game, size = sizeOf(game, mk.size);
+  const game = mk.game, size = sizeOf(game, mk.size, mk.stones);
   $('mdMake').classList.add('hidden');
   if (mk.mode === 'local') {
     openLocal({ ...newState(game, size), title: `한 기기 ${gameLabel(game, size)}`,
@@ -739,11 +820,11 @@ function myColor() {
   return null;
 }
 function stopRoom() { if (unRoom) { unRoom(); unRoom = null; } }
-function clearPick() { pending = hover = sel = -1; targets = []; promoMove = null; $('mdPromo').classList.add('hidden'); }
+function clearPick() { aim = null; pending = hover = sel = -1; targets = []; promoMove = null; $('mdPromo').classList.add('hidden'); }
 
-function openLocal(state) { stopLobby(); stopRoom(); mode = 'local'; G = state; clearPick(); show('scrGame'); renderGame(); }
+function openLocal(state) { stopLobby(); stopRoom(); mode = 'local'; G = state; stopAnim(); clearPick(); show('scrGame'); renderGame(); }
 function openOnline(id) {
-  stopLobby(); stopRoom(); mode = 'online'; G = null; clearPick();
+  stopLobby(); stopRoom(); mode = 'online'; G = null; stopAnim(); clearPick();
   roomRef = F.doc(db, ROOMS, id); show('scrGame');
   let prevTurn = null;
   unRoom = F.onSnapshot(roomRef, snap => {
@@ -755,7 +836,7 @@ function openOnline(id) {
     prevTurn = G.turn; renderGame();
   });
 }
-function goLobby() { stopRoom(); G = null; clearPick(); enterLobby(); }
+function goLobby() { stopRoom(); G = null; stopAnim(); clearPick(); enterLobby(); }
 $('btnBack').onclick = goLobby;
 
 async function joinRoom(id) {
@@ -831,8 +912,10 @@ function renderForms() {
   }</select></label>`).join('');
 }
 
-const STONE_CLASS = { omok: { B: 'black', W: 'white' }, baduk: { B: 'black', W: 'white' }, chess: { B: 'white', W: 'black' }, janggi: { B: 'cho', W: 'han' } };
+const STONE_CLASS = { omok: { B: 'black', W: 'white' }, baduk: { B: 'black', W: 'white' }, chess: { B: 'white', W: 'black' }, janggi: { B: 'cho', W: 'han' }, alkkagi: { B: 'black', W: 'white' } };
 const HELP = {
+  alkkagi: `<b>내 돌을 손가락으로 잡고 뒤로 끌었다가 놓으면</b> 반대쪽으로 튕겨 나가요. 많이 끌수록 세게 가요.<br>
+    돌의 중심이 판 밖으로 나가면 탈락! 번갈아 한 번씩 치고, <b>상대 돌을 모두 떨어뜨리면</b> 이겨요. (취소: 돌 쪽으로 다시 끌어서 놓기)`,
   omok: '가로·세로·대각선으로 <b>같은 색 돌 5개</b>를 먼저 이으면 이겨요. (자유 오목: 6목 이상도 승리)',
   baduk: `상대 돌을 둘러싸면 잡을 수 있어요. 두 사람이 연속으로 <b>패스</b>하면 끝나고 <b>집(빈칸+내 돌)</b>을 세요.<br>
     ⚠️ 죽은 돌은 자동으로 판정하지 않으니, 끝내기 전에 직접 잡아서 들어내세요. 백은 덤 ${KOMI}집을 받아요.`,
@@ -843,11 +926,12 @@ const HELP = {
     <b>빅장</b>(두 궁이 마주 봄): 상대가 막지 않거나 쉬면 무승부. 두 사람이 연속으로 쉬면 남은 말 점수로 정해요(한은 덤 ${JANGGI_KOMI}점).`
 };
 const DRAW_TEXT = { full: '판이 꽉 찼어요', stalemate: '스테일메이트(둘 곳이 없어요)', material: '남은 말로는 체크메이트를 할 수 없어요',
-  fifty: '50수 동안 잡기도 폰 이동도 없었어요', repetition: '같은 모양이 3번 나왔어요', bikjang: '빅장' };
+  allout: '양쪽 돌이 모두 떨어졌어요', fifty: '50수 동안 잡기도 폰 이동도 없었어요', repetition: '같은 모양이 3번 나왔어요', bikjang: '빅장' };
 
 function renderGame() {
   if (!G) return;
-  const mc = myColor(), isPlayer = mode === 'local' || !!mc, g = GAMES[G.game], stones = isStoneGame(G.game);
+  syncAnim();
+  const mc = myColor(), isPlayer = mode === 'local' || !!mc, g = GAMES[G.game], noPieces = isStoneGame(G.game) || G.game === 'alkkagi';
   $('gTitle').textContent = G.title;
   $('gInfo').textContent = `${g.icon} ${gameLabel(G.game, G.size)} · ${G.moveCount}수`;
   $('nmB').textContent = G.black?.name || '—';
@@ -859,6 +943,7 @@ function renderGame() {
     if (mode === 'online' && mc === c) parts.push('나 🙋');
     if (G.game === 'baduk') { if (c === 'W') parts.push(`덤 ${KOMI}`); parts.push(`잡은 돌 ${G.captures?.[c] ?? 0}개`); }
     if (points) parts.push(`남은 점수 ${points[c]}`);
+    if (G.game === 'alkkagi') parts.push(`남은 돌 ${akAlive(anim ? G.history[0] : G.board, G.size, c)}개`);
     $('sb' + c).textContent = parts.join(' · ');
     $('pl' + c).classList.toggle('on', G.status === 'playing' && G.turn === c);
   }
@@ -875,6 +960,7 @@ function renderGame() {
   } else {
     const wn = (G.winner === 'B' ? G.black : G.white)?.name, win = `${g.side[G.winner]} ${wn} 승리!`;
     if (G.winner === 'draw') msg = `🤝 무승부 — ${DRAW_TEXT[G.reason] || ''}`;
+    else if (G.reason === 'allout') msg = `🎉 ${win} 상대 돌을 모두 떨어뜨렸어요`;
     else if (G.reason === 'five') msg = `🎉 ${win} 다섯 줄 완성`;
     else if (G.reason === 'mate') msg = `🎉 ${G.game === 'chess' ? '체크메이트!' : '외통수!'} ${win}`;
     else if (G.reason === 'resign') msg = `🏳️ ${g.side[other(G.winner)]} 기권 → ${win}`;
@@ -884,6 +970,7 @@ function renderGame() {
     }
     if (mode === 'online' && mc && G.winner !== 'draw') msg += G.winner === mc ? ' 🏆' : ' 다음엔 이길 거예요 💪';
   }
+  if (anim) { msg = '🎯 돌이 움직이고 있어요…'; mine = warn = false; }
   $('gStatus').textContent = msg;
   $('gStatus').classList.toggle('mine', mine && !warn);
   $('gStatus').classList.toggle('warn', warn);
@@ -896,7 +983,9 @@ function renderGame() {
   $('btnRematch').classList.toggle('hidden', !(G.status === 'ended' && isPlayer));
   $('btnDelete').classList.toggle('hidden', !(online && (mc || G.createdBy === UID)));
   $('lbNames').classList.toggle('hidden', G.game !== 'chess');
-  $('pieceInfo').classList.toggle('hidden', stones);
+  $('pieceInfo').classList.toggle('hidden', noPieces);
+  $('lbConfirm').classList.toggle('hidden', G.game === 'alkkagi');
+  cv.style.touchAction = G.game === 'alkkagi' ? 'none' : 'manipulation';   // 알까기는 끌 때 화면이 따라 움직이지 않게
   $('gHelp').innerHTML = HELP[G.game];
   renderForms();
   renderPieceInfo();
@@ -906,7 +995,7 @@ function renderGame() {
 /* 고른 말의 이름·움직이는 법 안내 */
 function renderPieceInfo() {
   const el = $('pieceInfo');
-  if (!G || isStoneGame(G.game)) return;
+  if (!G || isStoneGame(G.game) || G.game === 'alkkagi') return;
   if (sel < 0 || G.board[sel] === '.') { el.innerHTML = '👆 <b>말을 눌러 보세요.</b> 이름과 갈 수 있는 칸을 알려 줄게요. 상대 말도 눌러 볼 수 있어요.'; return; }
   const p = G.board[sel], info = pieceInfo(G.game, p), c = owner(p);
   const movable = G.status === 'playing' && c === G.turn && myColor() === G.turn;
@@ -923,6 +1012,7 @@ const cv = $('cv'), ctx = cv.getContext('2d');
 let CW = 600, CH = 600, padX = 30, padY = 30, cell = 30;
 function fit() {
   if (!G) return;
+  if (G.game === 'alkkagi') return akFit();
   const { w, h } = dims(G);
   const extra = G.game === 'chess' ? 0 : 0.4;                 // 가장자리 여백 (칸 단위)
   const availW = $('boardWrap').clientWidth, availH = window.innerHeight - 250;
@@ -956,8 +1046,8 @@ function stars(n) {
 function line(x1, y1, x2, y2) { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
 function ring(x, y, r, color, width = 3) { ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.strokeStyle = color; ctx.lineWidth = width; ctx.stroke(); }
 function dot(x, y, r, color) { ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = color; ctx.fill(); }
-function stone(x, y, c, alpha = 1) {
-  const r = cell * 0.46; ctx.globalAlpha = alpha;
+function stone(x, y, c, alpha = 1, r = cell * 0.46) {
+  ctx.globalAlpha = alpha;
   dot(x + 1.5, y + 2, r, 'rgba(0,0,0,.25)');
   const g = ctx.createRadialGradient(x - r*.35, y - r*.4, r*.1, x, y, r);
   if (c === 'B') { g.addColorStop(0, '#6a6a6a'); g.addColorStop(1, '#0a0a0a'); }
@@ -1039,6 +1129,7 @@ function nameTag(i) {                                           // 고른 말 �
 }
 function draw() {
   if (!G) return;
+  if (G.game === 'alkkagi') return akDraw();
   const { w, h } = dims(G), total = w * h, stones = isStoneGame(G.game);
   drawGrid(w, h);
 
@@ -1092,7 +1183,7 @@ function idxAt(e) {
 cv.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse' || !G || !isStoneGame(G.game)) return; const i = idxAt(e); if (i !== hover) { hover = i; draw(); } });
 cv.addEventListener('pointerleave', () => { if (hover >= 0) { hover = -1; draw(); } });
 cv.addEventListener('click', e => {
-  if (!G) return; const i = idxAt(e); if (i < 0) return;
+  if (!G || G.game === 'alkkagi') return; const i = idxAt(e); if (i < 0) return;
   if (!isStoneGame(G.game)) return tapPiece(i);
   if (G.status === 'waiting') return toast('상대가 들어오면 시작해요');
   if (G.status !== 'playing') return;
@@ -1130,6 +1221,128 @@ $('promoList').onclick = e => {
   move(to, from, b.dataset.p);
 };
 $('promoCancel').onclick = () => { $('mdPromo').classList.add('hidden'); promoMove = null; pending = -1; draw(); };
+
+/* ================= 알까기 화면 ================= */
+const AK_MARGIN = 110, AK_VIEW = 1000 + AK_MARGIN * 2;   // 판 바깥 여백 (판 좌표 단위)
+const AK_PULL = 240, AK_CANCEL = 25;                      // 가장 세게 치는 끌기 거리, 이보다 짧으면 취소
+let aim = null;        // 끌고 있는 중: { i, x, y }
+let anim = null;       // 돌이 움직이는 중: { frames, start, frame, raf }
+let shownShot = null;  // 화면에 마지막으로 보여 준 수 번호
+
+function stopAnim() { if (anim) cancelAnimationFrame(anim.raf); anim = null; shownShot = null; }
+/* 새로 친 수가 들어오면 직전 판에서 다시 굴려서 보여 줘요 (방에 처음 들어왔을 때는 생략) */
+function syncAnim() {
+  if (G.game !== 'alkkagi' || G.moveCount === shownShot) return;
+  const isNext = shownShot !== null && G.moveCount === shownShot + 1;
+  shownShot = G.moveCount;
+  if (anim) { cancelAnimationFrame(anim.raf); anim = null; }
+  if (!isNext || G.history?.length !== 2) return;
+  const frames = akSimulate(G.history[0], akParseShot(G.history[1])).frames;
+  const a = anim = { frames, frame: 0, start: null, raf: 0 };
+  const tick = now => {
+    if (anim !== a) return;
+    a.start ??= now;
+    a.frame = Math.floor((now - a.start) / (1000 / 60));
+    if (a.frame >= a.frames.length + 12) { anim = null; renderGame(); return; }  // 끝난 뒤에는 저장된 판을 그려요
+    draw(); a.raf = requestAnimationFrame(tick);
+  };
+  a.raf = requestAnimationFrame(tick);
+}
+const akFlipped = () => mode === 'online' && myColor() === 'W';
+function akFit() {
+  const availW = $('boardWrap').clientWidth, availH = window.innerHeight - 250;
+  CW = CH = Math.max(Math.min(availW, 300), Math.min(availW, Math.max(availH, 300), 760));
+  const dpr = window.devicePixelRatio || 1;
+  cv.style.width = cv.style.height = CW + 'px'; cv.width = cv.height = Math.round(CW * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  akDraw();
+}
+const akScale = () => CW / AK_VIEW;
+function akScreen(x, y) { const k = akScale(), f = akFlipped(); return [((f ? 1000 - x : x) + AK_MARGIN) * k, ((f ? 1000 - y : y) + AK_MARGIN) * k]; }
+function akPoint(e) {     // 화면 위치 → 판 좌표
+  const r = cv.getBoundingClientRect(), k = akScale(), f = akFlipped();
+  const x = (e.clientX - r.left) / k - AK_MARGIN, y = (e.clientY - r.top) / k - AK_MARGIN;
+  return f ? [1000 - x, 1000 - y] : [x, y];
+}
+function akShotFrom(p, x, y) {   // 끈 방향의 반대로 튕겨요
+  const px = p.x - x, py = p.y - y, d = Math.sqrt(px * px + py * py);
+  if (d < AK_CANCEL) return null;
+  const power = Math.min(d, AK_PULL) / AK_PULL;
+  return { dx: Math.round(px / d * power * 1000), dy: Math.round(py / d * power * 1000), power };
+}
+const akCanShoot = () => !anim && G.status === 'playing' && myColor() === G.turn;
+function akDraw() {
+  const k = akScale(), r = AK.R * k;
+  ctx.fillStyle = '#6b4a2b'; ctx.fillRect(0, 0, CW, CH);                      // 판 바깥
+  const o = AK_MARGIN * k, side = 1000 * k;
+  const bg = ctx.createLinearGradient(o, o, o + side, o + side); bg.addColorStop(0, '#efc985'); bg.addColorStop(1, '#d9a95e');
+  ctx.fillStyle = bg; ctx.fillRect(o, o, side, side);
+  ctx.strokeStyle = 'rgba(90,61,28,.35)'; ctx.lineWidth = 1;
+  for (let n = 1; n < 10; n++) { line(o + side * n / 10, o, o + side * n / 10, o + side); line(o, o + side * n / 10, o + side, o + side * n / 10); }
+  ctx.strokeStyle = '#5a3d1c'; ctx.lineWidth = 3; ctx.strokeRect(o, o, side, side);
+
+  const list = anim ? anim.frames[Math.min(anim.frame, anim.frames.length - 1)] : akDecode(G.board);
+  list.forEach((p, i) => {
+    let x = p.x, y = p.y, shrink = 1;
+    if (p.out) {                                   // 떨어지는 돌은 점점 작아지며 사라져요
+      if (!anim) return;
+      const gone = anim.frames.findIndex(f => f[i].out);
+      if (gone <= 0 || anim.frames[0][i].out) return;
+      shrink = 1 - (anim.frame - gone) / 12;
+      if (shrink <= 0) return;
+      ({ x, y } = anim.frames[gone][i]);
+    }
+    const [sx, sy] = akScreen(x, y), color = akOwner(G, i);
+    if (shrink === 1) stone(sx, sy, color, 1, r);
+    else stone(sx, sy, color, shrink, r * shrink);
+    if (!anim && akCanShoot() && color === G.turn) ring(sx, sy, r + 4, '#ff8a3d', 2.5);
+  });
+  if (!anim && G.lastFrom >= 0 && !list[G.lastFrom]?.out) { const [sx, sy] = akScreen(list[G.lastFrom].x, list[G.lastFrom].y); dot(sx, sy, r * 0.2, '#ff3b3b'); }
+
+  if (!aim || !akCanShoot()) return;
+  const p = list[aim.i], shot = akShotFrom(p, aim.x, aim.y);
+  const [sx, sy] = akScreen(p.x, p.y), [fx, fy] = akScreen(aim.x, aim.y);
+  ring(sx, sy, r + 5, '#fff', 3);
+  ctx.setLineDash([5, 5]); ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 2; line(sx, sy, fx, fy); ctx.setLineDash([]);
+  if (!shot) return;
+  const len = (60 + 220 * shot.power) * k, d = Math.sqrt(shot.dx * shot.dx + shot.dy * shot.dy), f = akFlipped() ? -1 : 1;
+  const ux = f * shot.dx / d, uy = f * shot.dy / d, ex = sx + ux * (r + len), ey = sy + uy * (r + len);
+  const color = shot.power > 0.75 ? '#e53935' : shot.power > 0.4 ? '#ff8f00' : '#12a150';
+  ctx.strokeStyle = color; ctx.lineWidth = 6; ctx.lineCap = 'round'; line(sx + ux * r, sy + uy * r, ex, ey);
+  line(ex, ey, ex - ux * 14 - uy * 9, ey - uy * 14 + ux * 9); line(ex, ey, ex - ux * 14 + uy * 9, ey - uy * 14 - ux * 9);
+  ctx.lineCap = 'butt';
+  const label = `힘 ${Math.round(shot.power * 100)}%`;
+  ctx.font = '900 18px Pretendard,system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const ly = sy < CH / 2 ? sy + r + 24 : sy - r - 24;
+  ctx.lineWidth = 4; ctx.strokeStyle = '#2b2118'; ctx.strokeText(label, sx, ly); ctx.fillStyle = '#fff'; ctx.fillText(label, sx, ly);
+}
+cv.addEventListener('pointerdown', e => {
+  if (!G || G.game !== 'alkkagi' || aim || anim) return;
+  if (G.status === 'waiting') return toast('상대가 들어오면 시작해요');
+  if (G.status !== 'playing') return;
+  if (myColor() !== G.turn) return toast(mode === 'online' && !myColor() ? '관전 중이에요 👀' : '상대 차례예요 ⏳');
+  const [x, y] = akPoint(e), reach = Math.max(AK.R * 1.5, 24 / akScale());   // 작은 화면에서도 잡기 쉽게
+  let best = -1, bestD = reach * reach;
+  akDecode(G.board).forEach((p, i) => {
+    const d = (p.x - x) ** 2 + (p.y - y) ** 2;
+    if (!p.out && akOwner(G, i) === G.turn && d <= bestD) { best = i; bestD = d; }
+  });
+  if (best < 0) return toast(`${GAMES.alkkagi.side[G.turn]} 돌을 잡고 끌어 주세요`);
+  e.preventDefault(); cv.setPointerCapture(e.pointerId);
+  aim = { i: best, x, y, id: e.pointerId }; draw();
+});
+cv.addEventListener('pointermove', e => {
+  if (!aim || e.pointerId !== aim.id) return;
+  [aim.x, aim.y] = akPoint(e); draw();
+});
+cv.addEventListener('pointerup', e => {
+  if (!aim || e.pointerId !== aim.id) return;
+  const { i } = aim, [x, y] = akPoint(e), shot = akShotFrom(akDecode(G.board)[i], x, y);
+  aim = null;
+  if (shot && akCanShoot()) move({ i, dx: shot.dx, dy: shot.dy });
+  draw();
+});
+cv.addEventListener('pointercancel', () => { if (aim) { aim = null; draw(); } });
 
 $('optConfirm').checked = localStorage.getItem('gb_confirm') !== '0';
 $('optConfirm').onchange = e => { localStorage.setItem('gb_confirm', e.target.checked ? '1' : '0'); pending = -1; draw(); };

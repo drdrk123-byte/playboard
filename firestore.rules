@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // 오목·바둑·체스·장기 대국방 (로그인 없이 반·번호·닉네임으로 사용)
+    // 오목·바둑·체스·장기·알까기 대국방 (로그인 없이 반·번호·닉네임으로 사용)
     match /gameRooms/{roomId} {
       allow read: if true;
 
@@ -66,7 +66,8 @@ service cloud.firestore {
       return d.board is string
           && ((d.game in ['omok', 'baduk'] && d.size in [9, 13, 15, 19] && d.board.size() == d.size * d.size)
               || (d.game == 'chess' && d.size == 8 && d.board.size() == 64)
-              || (d.game == 'janggi' && d.size == 9 && d.board.size() == 90));
+              || (d.game == 'janggi' && d.size == 9 && d.board.size() == 90)
+              || (d.game == 'alkkagi' && d.size in [5, 7, 10] && d.board.size() == d.size * 16));
     }
 
     // 게임 종류, 판 크기, 방 이름, 만든 사람은 바꿀 수 없음
