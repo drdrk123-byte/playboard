@@ -32,6 +32,12 @@
 - 시간 제한(초읽기)과 무르기는 없습니다.
 
 ## 설정
+> **현재 상태:** `index.html`은 Firebase 프로젝트 `lifegame-eea21`의 `playboard` 웹 앱에 연결되어 있습니다.
+> 이 프로젝트는 다른 앱(인생게임)과 함께 씁니다. 지금 게시된 Firestore 규칙은 전체 읽기·쓰기 허용이라 규칙을 바꾸지 않아도 동작합니다.
+> ⚠️ `firestore.rules`로 **전체를 덮어쓰면** `gameRooms` 밖의 접근이 모두 막힙니다. 다른 앱이 Firestore를 쓰는지 확인한 뒤에 규칙을 바꾸세요.
+
+아래는 새 프로젝트에 처음 설정할 때의 순서입니다.
+
 1. [Firebase 콘솔](https://console.firebase.google.com)에서 프로젝트 선택(기존 프로젝트 재사용 가능) → **Firestore Database** 만들기
 2. Firestore **규칙** 탭에 `firestore.rules` 내용을 붙여넣고 게시
    (기존 규칙이 있으면 `match /gameRooms/{roomId} { ... }` 블록만 추가.
