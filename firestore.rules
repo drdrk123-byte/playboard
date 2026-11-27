@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 오목·바둑·체스·장기 대국방 (로그인 없이 반·번호·닉네임으로 사용)
+    match /gameRooms/{roomId} {
+      allow read: if true;
+      allow create: if (
+                         (request.resource.data.game in ['omok', 'baduk']
+                          && request.resource.data.size in [9, 13, 15, 19]
+                          && request.resource.data.board.size() == request.resource.data.size * request.resource.data.size)
+                      || (request.resource.data.game == 'chess'
+                          && request.resource.data.size == 8
+                          && request.resource.data.board.size() == 64)
+                      || (request.resource.data.game == 'janggi'
+                          && request.resource.data.size == 9
+                          && request.resource.data.board.size() == 90)
+                    );
+      allow update: if request.resource.data.game == resource.data.game
+                    && request.resource.data.size == resource.data.size
+                    && request.resource.data.board.size() == resource.data.board.size();
+      allow delete: if true;
+    }
+  }
+}
